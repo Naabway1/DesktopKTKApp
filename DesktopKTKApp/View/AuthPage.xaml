@@ -1,0 +1,30 @@
+﻿<Page x:Class="DesktopKTKApp.View.AuthPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:vm="clr-namespace:DesktopKTKApp.ViewModel" d:DataContext="{d:DesignInstance Type=vm:MainVM}"
+      mc:Ignorable="d" 
+      d:DesignHeight="900" d:DesignWidth="1600"
+      Title="AuthPage">
+
+    <Grid>
+        <Label Content="Авторизация" FontSize="72" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="100"/>
+        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <TextBox Text="{Binding AVAVA}" materialDesign:HintAssist.Hint="Логин" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
+            <TextBox Text="{Binding AVAVA}" materialDesign:HintAssist.Hint="Пароль" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
+            <Button Command="{Binding Navigate}" CommandParameter="MainPage" Width="200" Margin="10" Content="Войти"/>
+        </StackPanel>
+        <StackPanel VerticalAlignment="Bottom" Margin="20" HorizontalAlignment="Center">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Command="{Binding Navigate}" CommandParameter="noPage" Grid.Column="0" Content="Забыли пароль?" Margin="10" Background="LightGray" BorderBrush="LightGray"/>
+                <Button Command="{Binding Navigate}" CommandParameter="RegistrationPage" Grid.Column="1" Content="Нет аккаунта?"  Margin="10" Background="LightGray" BorderBrush="LightGray"/>
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Page>
