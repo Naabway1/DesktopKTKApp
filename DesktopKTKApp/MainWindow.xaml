@@ -8,6 +8,6 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="900" Width="1600">
     <Grid>
-        <Frame Name="NavigationFrame" Source="View/AuthPage.xaml" NavigationUIVisibility="Hidden"/>
+        <Frame Name="NavigationFrame" NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>

@@ -12,9 +12,9 @@
     <Grid>
         <Label Content="Авторизация" FontSize="72" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="100"/>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBox Text="{Binding AVAVA}" materialDesign:HintAssist.Hint="Логин" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
-            <TextBox Text="{Binding AVAVA}" materialDesign:HintAssist.Hint="Пароль" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
-            <Button Command="{Binding Navigate}" CommandParameter="MainPage" Width="200" Margin="10" Content="Войти"/>
+            <TextBox Text="{Binding Login}" materialDesign:HintAssist.Hint="Логин" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
+            <TextBox Text="{Binding Password}" materialDesign:HintAssist.Hint="Пароль" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
+            <Button Command="{Binding AuthCommand}" Width="200" Margin="10" Content="Войти"/>
         </StackPanel>
         <StackPanel VerticalAlignment="Bottom" Margin="20" HorizontalAlignment="Center">
             <Grid>

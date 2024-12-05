@@ -26,8 +26,9 @@ namespace DesktopKTKApp
         public MainWindow()
         {
             InitializeComponent();
-            NavigationVM navVM = new NavigationVM(NavigationFrame);
+            var navVM = new NavigationVM(NavigationFrame);
             DataContext = new MainVM(navVM);
+            NavigationFrame.Navigate(new AuthPage { DataContext = DataContext });
         }
     }
 }
