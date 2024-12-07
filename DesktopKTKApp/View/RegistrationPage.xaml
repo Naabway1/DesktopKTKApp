@@ -12,36 +12,17 @@
     <Grid>
         <Label Content="Регистрация" Margin="100" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="72"/>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBox Text="{Binding AVAVA}" materialDesign:HintAssist.Hint="ФИО" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
-            <TextBox Text="{Binding AVAVA}" materialDesign:HintAssist.Hint="Логин" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
-            <TextBox Text="{Binding AVAVA}" materialDesign:HintAssist.Hint="Пароль" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
-            <TextBox Text="{Binding AVAVA}" materialDesign:HintAssist.Hint="Подтвердите пароль" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
+            <TextBox Text="{Binding FullName}" materialDesign:HintAssist.Hint="ФИО" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
+            <TextBox Text="{Binding Login}" materialDesign:HintAssist.Hint="Логин" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
+            <TextBox Text="{Binding Password}" materialDesign:HintAssist.Hint="Пароль" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
+            <TextBox Text="{Binding PasswordToCheck}" materialDesign:HintAssist.Hint="Подтвердите пароль" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <ComboBox Name="Role" Grid.Column="0" Width="250" Height="70" Margin="10" SelectionChanged="ComboBox_SelectionChanged">
-                    <ComboBoxItem>
-                        <StackPanel>
-                            <TextBlock Text="Студент" FontSize="22"/>
-                            <TextBlock Text="Выберите, если вы студент." FontSize="12"/>
-                        </StackPanel>
-                    </ComboBoxItem>
-                    <ComboBoxItem>
-                        <StackPanel>
-                            <TextBlock Text="Преподаватель" FontSize="22"/>
-                            <TextBlock Text="Выберите, если вы преподаватель." FontSize="12"/>
-                        </StackPanel>
-                    </ComboBoxItem>
-                </ComboBox>
-                <ComboBox Name="Group" Grid.Column="1" Width="250" Height="70" Margin="10">
-                    <TextBlock Text="363" FontSize="22"/>
-                    <TextBlock Text="367" FontSize="22"/>
-                    <TextBlock Text="369" FontSize="22"/>
-                    <TextBlock Text="463" FontSize="22"/>
-                    <TextBlock Text="467" FontSize="22"/>
-                </ComboBox>
+                <ComboBox HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Width="250" Height="70" Margin="10" FontSize="22" ItemsSource="{Binding Roles}" SelectedItem="{Binding SelectedRole, Mode=TwoWay}"/>
+                <ComboBox HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" Width="250" Height="70" Margin="10" FontSize="22" ItemsSource="{Binding Groups}" IsEnabled="{Binding IsGroupsComboBoxEnabled}"/>
             </Grid>
             <Grid Cursor="">
                 <Grid.ColumnDefinitions>
@@ -49,7 +30,7 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <Button Command="{Binding Navigate}" CommandParameter="AuthPage" Margin="5" Content="Назад" Background="LightGray" BorderBrush="LightGray" Grid.Column="0"/>
-                <Button Command="{Binding Navigate}" CommandParameter="MainPage" Margin="5" Content="Зарегистрироваться" Grid.Column="1"/>
+                <Button Command="{Binding RegistrationCommand}" Margin="5" Content="Зарегистрироваться" Grid.Column="1"/>
             </Grid>
         </StackPanel>
     </Grid>

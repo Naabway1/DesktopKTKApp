@@ -11,17 +11,5 @@ namespace DesktopKTKApp.View
         {
             InitializeComponent();
         }
-
-        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (Role.SelectedIndex == 1) 
-            {
-                Group.IsEnabled = false;
-            }
-            else
-            {
-                Group.IsEnabled = true;
-            }
-        }
     }
 }
