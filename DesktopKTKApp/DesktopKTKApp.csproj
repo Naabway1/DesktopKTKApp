@@ -101,19 +101,19 @@
     <Compile Include="Model\Schedule.cs">
       <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\StudentGroups.cs">
+    <Compile Include="Model\Students.cs">
       <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
     </Compile>
-    <Compile Include="Model\Students.cs">
+    <Compile Include="Model\Subject.cs">
+      <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Model\Subject_Teacher.cs">
       <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\sysdiagrams.cs">
       <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\Teachers.cs">
-      <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\UserRoles.cs">
       <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
     </Compile>
     <Compile Include="Model\Users.cs">

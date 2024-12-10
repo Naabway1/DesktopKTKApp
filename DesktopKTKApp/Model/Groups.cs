@@ -19,7 +19,6 @@ namespace DesktopKTKApp.Model
         {
             this.Schedule = new HashSet<Schedule>();
             this.Students = new HashSet<Students>();
-            this.StudentGroups = new HashSet<StudentGroups>();
         }
     
         public int GroupID { get; set; }
@@ -29,7 +28,5 @@ namespace DesktopKTKApp.Model
         public virtual ICollection<Schedule> Schedule { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Students> Students { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<StudentGroups> StudentGroups { get; set; }
     }
 }

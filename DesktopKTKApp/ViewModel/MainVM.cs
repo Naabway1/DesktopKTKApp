@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Threading.Tasks;
 
 namespace DesktopKTKApp.ViewModel
 {
@@ -18,8 +19,8 @@ namespace DesktopKTKApp.ViewModel
         private readonly NavigationVM _navVM;
         private SqlConnection KTKdb;
         private int _roleID;
-        private object _selectedRole;
-        public object SelectedRole
+        private string _selectedRole;
+        public string SelectedRole
         {
             get => _selectedRole;
             set
@@ -30,7 +31,20 @@ namespace DesktopKTKApp.ViewModel
                     OnPropertyChanged(nameof(SelectedRole));
 
                     IsGroupsComboBoxEnabled = (_selectedRole.ToString() == "Студент");
-                    if (_selectedRole.ToString() == "Студент") { _roleID = 1; } else if (_selectedRole.ToString() == "Преподаватель") { _roleID = 2; } 
+                    if (_selectedRole.ToString() == "Студент") { _roleID = 1; } else if (_selectedRole.ToString() == "Преподаватель") { _roleID = 2; }
+                }
+            }
+        }
+        private string _selectedGroup;
+        public string SelectedGroup
+        {
+            get => _selectedGroup;
+            set
+            {
+                if (_selectedGroup != value)
+                {
+                    _selectedGroup = value;
+                    OnPropertyChanged(nameof(SelectedGroup));
                 }
             }
         }
@@ -47,8 +61,8 @@ namespace DesktopKTKApp.ViewModel
                 }
             }
         }
-        public ObservableCollection<object> Roles { get; private set; }
-        public ObservableCollection<object> Groups { get; private set; }
+        public ObservableCollection<string> Roles { get; private set; }
+        public ObservableCollection<string> Groups { get; private set; }
 
         private string _login;
         public string Login
@@ -110,11 +124,11 @@ namespace DesktopKTKApp.ViewModel
         public ICommand AuthCommand { get; private set; }
         public ICommand RegistrationCommand { get; private set; }
 
-        public MainVM (NavigationVM vm)
+        public MainVM(NavigationVM vm)
         {
             _navVM = vm; // объявление переменных
-            Roles = new ObservableCollection<object>();
-            Groups = new ObservableCollection<object>();
+            Roles = new ObservableCollection<string>();
+            Groups = new ObservableCollection<string>();
 
             Navigate = new RelayCommand(NavigateCommandExecuted); // команды для кнопок
             AuthCommand = new RelayCommand(_ => CheckAuthData());
@@ -132,7 +146,7 @@ namespace DesktopKTKApp.ViewModel
             while (readerForRoles.Read())
             {
                 object param = readerForRoles.GetValue(0);
-                Roles.Add(param);
+                Roles.Add(param.ToString());
             }
             readerForRoles.Close();
 
@@ -145,7 +159,7 @@ namespace DesktopKTKApp.ViewModel
             while (readerForGroups.Read())
             {
                 object param = readerForGroups.GetValue(0);
-                Groups.Add(param);
+                Groups.Add(param.ToString());
             }
             readerForGroups.Close();
         }
@@ -158,8 +172,8 @@ namespace DesktopKTKApp.ViewModel
                 Connection = KTKdb
             };
             SqlDataReader sqlDataReader = sql.ExecuteReader();
-            try 
-            { 
+            try
+            {
                 if (sqlDataReader.Read() == true)
                 {
                     _navVM.NavigateTo("MainPage", this);
@@ -170,10 +184,10 @@ namespace DesktopKTKApp.ViewModel
                     Debug.WriteLine("А пароль то неправильный, XD");
                     sqlDataReader.Close();
                 }
-            } 
-            catch { return; }        
+            }
+            catch { return; }
         }
-        private void Registration()
+        private async void Registration()
         {
             SqlCommand cmd = new SqlCommand()
             {
@@ -191,7 +205,16 @@ namespace DesktopKTKApp.ViewModel
                 readerForCheckLogins.Close();
                 if (_password == _passwordToCheck)
                 {
-                    cmd.ExecuteNonQuery();
+                    if (_selectedRole.ToString() == "Студент") //добавление в таблицу Студентов
+                    {
+                        await Task.Run(() => cmd.ExecuteNonQueryAsync());
+                        RegStudent();
+                    }
+                    else if (_selectedRole.ToString() == "Преподаватель") //добавление в таблицу Преподаватели
+                    {
+                        await Task.Run(() => cmd.ExecuteNonQueryAsync());
+                        RegTeacher();
+                    }
                     _navVM.NavigateTo("AuthPage", this);
                 }
                 else
@@ -203,16 +226,56 @@ namespace DesktopKTKApp.ViewModel
             {
                 MessageBox.Show("Пользователь с таким логином уже существует! Придумайте другой!");
             }
+        }
 
-            if (_selectedRole.ToString() == "Студент")
+        private void RegStudent()
+        {
+            SqlCommand checkUserTable = new SqlCommand()
             {
-                SqlCommand addToStudentTable = new SqlCommand()
+                Connection = KTKdb,
+                CommandText = $"SELECT UserID FROM Users WHERE Login = \'{_login}\'"
+            };
+            SqlDataReader readerUserTable = checkUserTable.ExecuteReader();
+            int userID = int.Parse(readerUserTable.GetValue(0).ToString());
+            readerUserTable.Close(); //получение юзер айди для внесения в таблицу студентов
+
+            SqlCommand checkGroupTable = new SqlCommand()
+            {
+                Connection = KTKdb,
+                CommandText = $"Select GroupID from Groups where GroupName = \'{_selectedGroup}\'"
+            };
+            SqlDataReader readerGroupTable = checkGroupTable.ExecuteReader();
+            int groupID = int.Parse(readerGroupTable.GetValue(0).ToString());
+
+            SqlCommand writeIntoStudentTable = new SqlCommand()
+            {
+                Connection = KTKdb,
+                CommandText = $"INSERT INTO Students (UserID, GroupID) VALUES ({userID}, {groupID})"
+            };
+            readerGroupTable.Close(); //получение группы айди для внесения в таблицу студентов
+            writeIntoStudentTable.ExecuteNonQuery();
+        }
+        private void RegTeacher()
+        {
+            SqlCommand checkUserTable = new SqlCommand()
+            {
+                Connection = KTKdb,
+                CommandText = $"SELECT UserID FROM Users WHERE Login = \'{_login}\'"
+            };
+            SqlDataReader readerUserTable = checkUserTable.ExecuteReader();
+            if (readerUserTable.Read() == true)
+            {
+                int userID = int.Parse(readerUserTable.GetValue(0).ToString());
+                readerUserTable.Close(); //получение юзер айди для внесения в таблицу преподавателей
+                SqlCommand writeIntoTeachersTable = new SqlCommand()
                 {
                     Connection = KTKdb,
-                    CommandText = $"fd"
+                    CommandText = $"INSERT INTO Teachers (UserID) VALUES ({userID})"
                 };
+                writeIntoTeachersTable.ExecuteNonQuery(); //запись в таблицу преподавателей
             }
         }
+
         private void NavigateCommandExecuted(object param)
         {
             _navVM.NavigateTo(param?.ToString(), this);

@@ -28,11 +28,11 @@ namespace DesktopKTKApp.Model
         public virtual DbSet<Groups> Groups { get; set; }
         public virtual DbSet<Roles> Roles { get; set; }
         public virtual DbSet<Schedule> Schedule { get; set; }
-        public virtual DbSet<StudentGroups> StudentGroups { get; set; }
         public virtual DbSet<Students> Students { get; set; }
+        public virtual DbSet<Subject> Subject { get; set; }
+        public virtual DbSet<Subject_Teacher> Subject_Teacher { get; set; }
         public virtual DbSet<sysdiagrams> sysdiagrams { get; set; }
         public virtual DbSet<Teachers> Teachers { get; set; }
-        public virtual DbSet<UserRoles> UserRoles { get; set; }
         public virtual DbSet<Users> Users { get; set; }
     }
 }

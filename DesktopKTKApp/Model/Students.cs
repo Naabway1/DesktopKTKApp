@@ -14,19 +14,11 @@ namespace DesktopKTKApp.Model
     
     public partial class Students
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public Students()
-        {
-            this.StudentGroups = new HashSet<StudentGroups>();
-        }
-    
         public int StudentID { get; set; }
         public int UserID { get; set; }
         public int GroupID { get; set; }
     
         public virtual Groups Groups { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<StudentGroups> StudentGroups { get; set; }
         public virtual Users Users { get; set; }
     }
 }

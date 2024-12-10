@@ -12,13 +12,19 @@ namespace DesktopKTKApp.Model
     using System;
     using System.Collections.Generic;
     
-    public partial class StudentGroups
+    public partial class Subject
     {
-        public int StudentGroupID { get; set; }
-        public int StudentID { get; set; }
-        public int GroupID { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Subject()
+        {
+            this.Subject_Teacher = new HashSet<Subject_Teacher>();
+        }
     
-        public virtual Groups Groups { get; set; }
-        public virtual Students Students { get; set; }
+        public int SubjectID { get; set; }
+        public string Title { get; set; }
+        public Nullable<int> CountOfHours { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Subject_Teacher> Subject_Teacher { get; set; }
     }
 }

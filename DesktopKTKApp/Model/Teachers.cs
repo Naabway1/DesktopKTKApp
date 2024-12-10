@@ -14,9 +14,17 @@ namespace DesktopKTKApp.Model
     
     public partial class Teachers
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Teachers()
+        {
+            this.Subject_Teacher = new HashSet<Subject_Teacher>();
+        }
+    
         public int TeacherID { get; set; }
         public int UserID { get; set; }
     
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Subject_Teacher> Subject_Teacher { get; set; }
         public virtual Users Users { get; set; }
     }
 }
