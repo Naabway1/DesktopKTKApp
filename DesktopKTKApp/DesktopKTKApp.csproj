@@ -57,6 +57,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -77,54 +78,22 @@
     </ApplicationDefinition>
     <Compile Include="Core\ObservableObject.cs" />
     <Compile Include="Core\RealyCommand.cs" />
-    <Compile Include="Model\DataBaseOfKTK.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DataBaseOfKTK.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\DataBaseOfKTK.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\DataBaseOfKTK.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>DataBaseOfKTK.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Groups.cs">
-      <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Roles.cs">
-      <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Schedule.cs">
-      <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Students.cs">
-      <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Subject.cs">
-      <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Subject_Teacher.cs">
-      <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\sysdiagrams.cs">
-      <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Teachers.cs">
-      <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Model\Users.cs">
-      <DependentUpon>DataBaseOfKTK.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Model\KTKdb.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
     <Compile Include="View\AuthPage.xaml.cs">
       <DependentUpon>AuthPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="View\MainPage.xaml.cs">
-      <DependentUpon>MainPage.xaml</DependentUpon>
+    <Compile Include="View\ForgottenPasswordRecovery.xaml.cs">
+      <DependentUpon>ForgottenPasswordRecovery.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MainPageForAdmins.xaml.cs">
+      <DependentUpon>MainPageForAdmins.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MainPageForStudents.xaml.cs">
+      <DependentUpon>MainPageForStudents.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\MainPageForTeachers.xaml.cs">
+      <DependentUpon>MainPageForTeachers.xaml</DependentUpon>
     </Compile>
     <Compile Include="View\RegistrationPage.xaml.cs">
       <DependentUpon>RegistrationPage.xaml</DependentUpon>
@@ -145,7 +114,19 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="View\MainPage.xaml">
+    <Page Include="View\ForgottenPasswordRecovery.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MainPageForAdmins.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MainPageForStudents.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\MainPageForTeachers.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -172,13 +153,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EntityDeploy Include="Model\DataBaseOfKTK.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>DataBaseOfKTK.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <None Include="Model\DataBaseOfKTK.edmx.diagram">
-      <DependentUpon>DataBaseOfKTK.edmx</DependentUpon>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -187,18 +161,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Model\DataBaseOfKTK.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>DataBaseOfKTK.Context.cs</LastGenOutput>
-      <DependentUpon>DataBaseOfKTK.edmx</DependentUpon>
-    </Content>
-    <Content Include="Model\DataBaseOfKTK.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>DataBaseOfKTK.edmx</DependentUpon>
-      <LastGenOutput>DataBaseOfKTK.cs</LastGenOutput>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />

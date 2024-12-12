@@ -22,7 +22,7 @@
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button Command="{Binding Navigate}" CommandParameter="noPage" Grid.Column="0" Content="Забыли пароль?" Margin="10" Background="LightGray" BorderBrush="LightGray"/>
+                <Button Command="{Binding Navigate}" CommandParameter="ForgottenPasswordRecovery" Grid.Column="0" Content="Забыли пароль?" Margin="10" Background="LightGray" BorderBrush="LightGray"/>
                 <Button Command="{Binding Navigate}" CommandParameter="RegistrationPage" Grid.Column="1" Content="Нет аккаунта?"  Margin="10" Background="LightGray" BorderBrush="LightGray"/>
             </Grid>
         </StackPanel>
