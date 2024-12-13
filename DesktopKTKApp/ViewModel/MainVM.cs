@@ -15,6 +15,7 @@ namespace DesktopKTKApp.ViewModel
     public class MainVM : ObservableObject
     {
         private readonly NavigationVM _navVM;
+
         private string _selectedRole;
         public string SelectedRole
         {
@@ -30,6 +31,7 @@ namespace DesktopKTKApp.ViewModel
                 }
             }
         }
+
         private string _selectedGroup;
         public string SelectedGroup
         {
@@ -43,6 +45,7 @@ namespace DesktopKTKApp.ViewModel
                 }
             }
         }
+
         private bool _isGroupsComboBoxEnabled;
         public bool IsGroupsComboBoxEnabled
         {
@@ -56,6 +59,7 @@ namespace DesktopKTKApp.ViewModel
                 }
             }
         }
+
         public List<string> Roles { get; private set; }
         public List<string> Groups { get; private set; }
 
@@ -70,6 +74,19 @@ namespace DesktopKTKApp.ViewModel
                     _login = value;
                 }
                 OnPropertyChanged(nameof(Login));
+            }
+        }
+
+        public char PasswordChar => IsPasswordVisible ? '\0' : '●';
+        private bool _isPasswordVisible;
+        public bool IsPasswordVisible
+        {
+            get => _isPasswordVisible;
+            set
+            {
+                _isPasswordVisible = value;
+                OnPropertyChanged(nameof(IsPasswordVisible));
+                OnPropertyChanged(nameof(PasswordChar));
             }
         }
 
@@ -118,6 +135,7 @@ namespace DesktopKTKApp.ViewModel
         public ICommand Navigate { get; private set; }
         public ICommand AuthCommand { get; private set; }
         public ICommand RegistrationCommand { get; private set; }
+        public ICommand ShowPassword { get; private set; }
 
         public MainVM(NavigationVM vm)
         {
@@ -126,6 +144,7 @@ namespace DesktopKTKApp.ViewModel
             Navigate = new RelayCommand(NavigateCommandExecuted); // команды для кнопок
             AuthCommand = new RelayCommand(_ => CheckAuthData());
             RegistrationCommand = new RelayCommand(_ => Registration());
+            ShowPassword = new RelayCommand(_ => IsPasswordVisible = !IsPasswordVisible);
 
             Groups = KTKdb.SQLGetListOfData("SELECT GroupName FROM Groups");//Вытягивание данных о группах
             Roles = KTKdb.SQLGetListOfData("SELECT RoleName FROM Roles WHERE RoleName != 'Администратор' ");//Вытягивание данных о ролях (препод/студентик)
@@ -144,54 +163,85 @@ namespace DesktopKTKApp.ViewModel
                 return builder.ToString();
             }
         }
-        private void Registration()
+        private async void Registration()
         {
-            using (TransactionScope scope = new TransactionScope())
+            var transactionOptions = new TransactionOptions
+            {
+                IsolationLevel = IsolationLevel.ReadCommitted
+            };
+
+            using (var scope = new TransactionScope((TransactionScopeOption)TransactionScopeAsyncFlowOption.Enabled, transactionOptions))
             {
                 try
                 {
-                    if (KTKdb.SQLRead($"SELECT * FROM Users where Login = '{_login}' ") != true)
+                    var userExists = await KTKdb.SQLReadAsync($"SELECT * FROM Users WHERE Login = '{_login}'");
+                    if (userExists)
                     {
-                        if (_password == _passwordToCheck)
+                        MessageBox.Show("Пользователь с таким логином существует! Придумайте другой!");
+                        return;
+                    }
+
+                    if (_password != _passwordToCheck)
+                    {
+                        MessageBox.Show("Пароли не совпадают!");
+                        return;
+                    }
+
+                    var roleIdObj = await KTKdb.SQLReadValueAsync($"SELECT TOP 1 RoleID FROM Roles WHERE RoleName = '{_selectedRole}'");
+                    if (roleIdObj == null)
+                    {
+                        MessageBox.Show("Указанная роль не найдена!");
+                        return;
+                    }
+                    var roleId = int.Parse(roleIdObj.ToString());
+
+                    await KTKdb.SQLInsertDataAsync("Users", new Dictionary<string, object>
+                    {
+                        {"FullName", _fullName},
+                        {"Login", _login},
+                        {"Password", HashPassword(_password)},
+                        {"RoleID", roleId}
+                    });
+
+                    var userIdObj = await KTKdb.SQLReadValueAsync($"SELECT UserID FROM Users WHERE Login = '{_login}'");
+                    if (userIdObj == null)
+                    {
+                        MessageBox.Show("Ошибка получения ID пользователя.");
+                        return;
+                    }
+                    var userId = int.Parse(userIdObj.ToString());
+
+                    if (roleId == int.Parse((await KTKdb.SQLReadValueAsync($"SELECT RoleID FROM Roles WHERE RoleName = 'Студент'"))?.ToString() ?? "0"))
+                    {
+                        var groupIdObj = await KTKdb.SQLReadValueAsync($"SELECT GroupID FROM Groups WHERE GroupName = '{_selectedGroup}'");
+                        if (groupIdObj == null)
                         {
-                            KTKdb.SQLInsertData("Users", new Dictionary<string, object>
-                            {
-                                {"FullName", _fullName},
-                                {"Login", _login},
-                                {"Password", HashPassword(_password)},
-                                {"RoleID", int.Parse(KTKdb.SQLReadValue($"SELECT TOP 1 RoleID FROM Roles WHERE RoleName = '{_selectedRole}'").ToString())}
-                            });
-                            if (KTKdb.SQLReadValue($"SELECT RoleID from Users WHERE Login = '{_login}' ") == KTKdb.SQLReadValue($"SELECT RoleID from Roles WHERE RoleName = 'Студент' "))
-                            {
-                                KTKdb.SQLInsertData("Students", new Dictionary<string, object>
-                                {
-                                    {"UserID", KTKdb.SQLReadValue($"SELECT UserID from Users where Login = '{_login}' ")},
-                                    {"GroupID", KTKdb.SQLReadValue($"SELECT GroupID from Groups where GroupName = '{_selectedGroup}' ")}
-                                });
-                                scope.Complete();
-                                Console.WriteLine("Транзакция успешно выполнена");
-                                _navVM.NavigateTo("AuthPage", this);
-                            }
-                            else if (KTKdb.SQLReadValue($"SELECT RoleID from Users WHERE Login = '{_login}' ") == KTKdb.SQLReadValue($"SELECT RoleID from Roles WHERE RoleName = 'Преподаватель' ")) 
-                            {
-                                KTKdb.SQLInsertData("Teachers", new Dictionary<string, object>
-                                {
-                                    {"UserID", KTKdb.SQLReadValue($"SELECT UserID from Users where Login = '{_login}' ")},
-                                });
-                                scope.Complete();
-                                Console.WriteLine("Транзакция успешно выполнена");
-                                _navVM.NavigateTo("AuthPage", this);
-                            }
+                            MessageBox.Show("Группа не найдена!");
+                            return;
                         }
-                        else
+                        var groupId = int.Parse(groupIdObj.ToString());
+
+                        await KTKdb.SQLInsertDataAsync("Students", new Dictionary<string, object>
                         {
-                            MessageBox.Show("Пароли не совпадают!");
-                        }
+                            {"UserID", userId},
+                            {"GroupID", groupId}
+                        });
+                    }
+                    else if (roleId == int.Parse((await KTKdb.SQLReadValueAsync($"SELECT RoleID FROM Roles WHERE RoleName = 'Преподаватель'"))?.ToString() ?? "0"))
+                    {
+                        await KTKdb.SQLInsertDataAsync("Teachers", new Dictionary<string, object>
+                        {
+                            {"UserID", userId}
+                        });
                     }
                     else
                     {
-                        MessageBox.Show("Пользователь с таким логином существует! Придумайте другой!");
+                        MessageBox.Show("Указана некорректная роль.");
+                        return;
                     }
+                    scope.Complete();
+                    Console.WriteLine("Транзакция успешно выполнена");
+                    _navVM.NavigateTo("AuthPage", this);
                 }
                 catch (Exception ex)
                 {

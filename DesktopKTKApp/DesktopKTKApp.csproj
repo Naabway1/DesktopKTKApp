@@ -76,6 +76,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Core\BoolToEyeConverter.cs" />
     <Compile Include="Core\ObservableObject.cs" />
     <Compile Include="Core\RealyCommand.cs" />
     <Compile Include="Model\KTKdb.cs" />

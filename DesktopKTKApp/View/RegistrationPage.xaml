@@ -10,8 +10,8 @@
       Title="RegistrationPage">
 
     <Grid>
-        <Label Content="Регистрация" Margin="100" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="72"/>
         <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Label Content="Регистрация" Margin="50" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="72"/>
             <TextBox Text="{Binding FullName}" materialDesign:HintAssist.Hint="ФИО" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
             <TextBox Text="{Binding Login}" materialDesign:HintAssist.Hint="Логин" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
             <TextBox Text="{Binding Password}" materialDesign:HintAssist.Hint="Пароль" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
@@ -22,9 +22,9 @@
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <ComboBox HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="0" Width="250" Height="70" Margin="10" FontSize="22" ItemsSource="{Binding Roles}" SelectedItem="{Binding SelectedRole, Mode=TwoWay}"/>
-                <ComboBox HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" Width="250" Height="70" Margin="10" FontSize="22" ItemsSource="{Binding Groups}" IsEnabled="{Binding IsGroupsComboBoxEnabled}"/>
+                <ComboBox HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" Width="250" Height="70" Margin="10" FontSize="22" ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedGroup, Mode=TwoWay}" IsEnabled="{Binding IsGroupsComboBoxEnabled}"/>
             </Grid>
-            <Grid Cursor="">
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>

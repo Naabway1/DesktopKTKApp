@@ -54,6 +54,30 @@ namespace DesktopKTKApp.Model
             db.Close();
             return result;
         }
+        public static async Task<bool> SQLReadAsync(string sql)
+        {
+            await db.OpenAsync(); // Асинхронное открытие соединения
+            try
+            {
+                var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
+                await cmd.ExecuteNonQueryAsync(); // Асинхронное выполнение команды
+
+                var sqlCommand = new SqlCommand()
+                {
+                    Connection = db,
+                    CommandText = sql
+                };
+
+                using (var reader = await sqlCommand.ExecuteReaderAsync()) // Асинхронный вызов ExecuteReader
+                {
+                    return await reader.ReadAsync(); // Проверяем, есть ли данные
+                }
+            }
+            finally
+            {
+                db.Close(); // Закрываем соединение в любом случае
+            }
+        }
         public static object SQLReadValue(string sql)
         {
             try
@@ -90,6 +114,38 @@ namespace DesktopKTKApp.Model
             finally
             {
                 db.Close();
+            }
+        }
+        public static async Task<object> SQLReadValueAsync(string sql)
+        {
+            await db.OpenAsync(); // Асинхронное открытие соединения
+            try
+            {
+                var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
+                await cmd.ExecuteNonQueryAsync(); // Асинхронное выполнение команды
+
+                var sqlCommand = new SqlCommand()
+                {
+                    Connection = db,
+                    CommandText = sql
+                };
+
+                using (var reader = await sqlCommand.ExecuteReaderAsync()) // Асинхронный вызов ExecuteReader
+                {
+                    // Проверяем наличие строк
+                    if (await reader.ReadAsync()) // Асинхронное чтение строки
+                    {
+                        return reader.GetValue(0); // Возвращаем первое значение
+                    }
+                    else
+                    {
+                        throw new Exception("Запрос не вернул данных.");
+                    }
+                }
+            }
+            finally
+            {
+                db.Close(); // Закрываем соединение в любом случае
             }
         }
         public static DataTable SQLGetData(string sql)
@@ -148,24 +204,30 @@ namespace DesktopKTKApp.Model
             sqlCommand.ExecuteNonQuery();
             db.Close();
         }  // Использование: KTKdb.InsertData("Users", new Dictionary<string, object> { {"...", "..."}, {"...", "..."} });
-        public static async void SQLInsertDataAsync(string tableName, Dictionary<string, object> values)
+        public static async Task SQLInsertDataAsync(string tableName, Dictionary<string, object> values)
         {
-            db.Open();
-            var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-            cmd.ExecuteNonQuery();
-
-            string columns = string.Join(", ", values.Keys);
-            string parameters = string.Join(", ", values.Keys.Select(k => $"@{k}"));
-            string sql = $"INSERT INTO {tableName} ({columns}) VALUES ({parameters})";
-
-            SqlCommand sqlCommand = new SqlCommand(sql, db);
-            foreach (var pair in values)
+            await db.OpenAsync(); // Асинхронное открытие соединения
+            try
             {
-                sqlCommand.Parameters.AddWithValue($"@{pair.Key}", pair.Value);
-            }
+                var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
+                await cmd.ExecuteNonQueryAsync(); // Асинхронное выполнение команды
 
-            sqlCommand.ExecuteNonQuery();
-            db.Close();
+                string columns = string.Join(", ", values.Keys);
+                string parameters = string.Join(", ", values.Keys.Select(k => $"@{k}"));
+                string sql = $"INSERT INTO {tableName} ({columns}) VALUES ({parameters})";
+
+                SqlCommand sqlCommand = new SqlCommand(sql, db);
+                foreach (var pair in values)
+                {
+                    sqlCommand.Parameters.AddWithValue($"@{pair.Key}", pair.Value);
+                }
+
+                await sqlCommand.ExecuteNonQueryAsync(); // Асинхронное выполнение команды вставки
+            }
+            finally
+            {
+                db.Close(); // Закрытие соединения в любом случае
+            }
         }
         public static void SQLUpdateData(string tableName, Dictionary<string, object> values, string condition)
         {
