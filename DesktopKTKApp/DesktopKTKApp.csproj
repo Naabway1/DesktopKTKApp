@@ -80,6 +80,7 @@
     <Compile Include="Core\ObservableObject.cs" />
     <Compile Include="Core\RealyCommand.cs" />
     <Compile Include="Model\KTKdb.cs" />
+    <Compile Include="Model\Week.cs" />
     <Compile Include="ViewModel\MainVM.cs" />
     <Compile Include="View\AuthPage.xaml.cs">
       <DependentUpon>AuthPage.xaml</DependentUpon>

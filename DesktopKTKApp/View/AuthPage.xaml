@@ -22,8 +22,7 @@
                     <RowDefinition/>
                 </Grid.RowDefinitions>
                 <TextBox Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding Login}" materialDesign:HintAssist.Hint="Логин" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
-                <TextBox Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Password}" materialDesign:HintAssist.Hint="Пароль" Style="{StaticResource MaterialDesignFloatingHintTextBox}" Height="50" FontSize="22" Width="400" Margin="10"/>
-                <Button/>
+                <TextBox Grid.Row="1" Grid.ColumnSpan="2" Text="{Binding Password}" materialDesign:HintAssist.Hint="Пароль" Style="{StaticResource MaterialDesignFloatingHintTextBox}"  Height="50" FontSize="22" Width="400" Margin="10"/>
             </Grid>
             <Button Command="{Binding AuthCommand}" Width="200" Margin="10" Content="Войти"/>
         </StackPanel>

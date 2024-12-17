@@ -9,6 +9,8 @@ using System.Transactions;
 using System.Windows;
 using System.Collections.Generic;
 using System.Text;
+using System.Data;
+using IsolationLevel = System.Transactions.IsolationLevel;
 
 namespace DesktopKTKApp.ViewModel
 {
@@ -62,6 +64,8 @@ namespace DesktopKTKApp.ViewModel
 
         public List<string> Roles { get; private set; }
         public List<string> Groups { get; private set; }
+        public List<Week> Weeks { get; private set; }
+        public List<string> DayTitle {  get; private set; }
 
         private string _login;
         public string Login
@@ -77,16 +81,17 @@ namespace DesktopKTKApp.ViewModel
             }
         }
 
-        public char PasswordChar => IsPasswordVisible ? '\0' : '●';
-        private bool _isPasswordVisible;
-        public bool IsPasswordVisible
+        private string _username;
+        public string Username
         {
-            get => _isPasswordVisible;
+            get => _username;
             set
             {
-                _isPasswordVisible = value;
-                OnPropertyChanged(nameof(IsPasswordVisible));
-                OnPropertyChanged(nameof(PasswordChar));
+                if (value != _username)
+                {
+                    _username = value;
+                    OnPropertyChanged(nameof(Username));
+                }
             }
         }
 
@@ -135,32 +140,48 @@ namespace DesktopKTKApp.ViewModel
         public ICommand Navigate { get; private set; }
         public ICommand AuthCommand { get; private set; }
         public ICommand RegistrationCommand { get; private set; }
-        public ICommand ShowPassword { get; private set; }
-
         public MainVM(NavigationVM vm)
         {
-            _navVM = vm; // объявление переменных
+            _navVM = vm; //объявление переменных
 
-            Navigate = new RelayCommand(NavigateCommandExecuted); // команды для кнопок
+            Navigate = new RelayCommand(NavigateCommandExecuted); //команды для кнопок
             AuthCommand = new RelayCommand(_ => CheckAuthData());
             RegistrationCommand = new RelayCommand(_ => Registration());
-            ShowPassword = new RelayCommand(_ => IsPasswordVisible = !IsPasswordVisible);
 
-            Groups = KTKdb.SQLGetListOfData("SELECT GroupName FROM Groups");//Вытягивание данных о группах
-            Roles = KTKdb.SQLGetListOfData("SELECT RoleName FROM Roles WHERE RoleName != 'Администратор' ");//Вытягивание данных о ролях (препод/студентик)
+            Groups = KTKdb.SQLGetListOfData("SELECT GroupName FROM Groups"); //Вытягивание данных о группах
+            Roles = KTKdb.SQLGetListOfData("SELECT RoleName FROM Roles WHERE RoleName != 'Администратор' "); //Вытягивание данных о ролях (препод/студентик)
+
+            DayTitle = new List<string>()
+            {
+                "Понедельник",
+                "Вторник",
+                "Среда",
+                "Четверг",
+                "Пятница",
+                "Суббота"
+            };
+
+            Weeks = GenerateWeeks(GetFirstMondayInSeptember(DateTime.Now.Year));
         }
 
         private static string HashPassword(string password)
         {
-            using (SHA256 sha256 = SHA256.Create())
+            if (password != null)
             {
-                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-                StringBuilder builder = new StringBuilder();
-                foreach (var b in bytes)
+                using (SHA256 sha256 = SHA256.Create())
                 {
-                    builder.Append(b.ToString("x2"));
+                    byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                    StringBuilder builder = new StringBuilder();
+                    foreach (var b in bytes)
+                    {
+                        builder.Append(b.ToString("x2"));
+                    }
+                    return builder.ToString();
                 }
-                return builder.ToString();
+            }
+            else
+            {
+                return null;
             }
         }
         private async void Registration()
@@ -251,15 +272,23 @@ namespace DesktopKTKApp.ViewModel
         }
         private void CheckAuthData()
         {
-            if (KTKdb.SQLRead("SELECT RoleID FROM Roles WHERE RoleName = 'Студент'") == KTKdb.SQLRead($"SELECT RoleID FROM Users WHERE Login = '{_login}' and Password = '{HashPassword(_password)}'"))
+            var roleID = 0;
+            try
+            {
+                roleID = int.Parse(KTKdb.SQLReadValue($"SELECT RoleID FROM Users WHERE Login = '{_login}' and Password = '{HashPassword(_password)}'").ToString());
+                Username = $"{KTKdb.SQLReadValue($"SELECT FullName FROM Users WHERE Login = '{_login}'")} ({_login})";
+            }
+            catch { }
+
+            if (roleID == int.Parse(KTKdb.SQLReadValue($"SELECT RoleID FROM Roles WHERE RoleName = 'Студент'").ToString()))
             {
                 _navVM.NavigateTo("MainPageForStudents", this);
             }
-            else if (KTKdb.SQLRead("SELECT RoleID FROM Roles WHERE RoleName = 'Преподаватель'") == KTKdb.SQLRead($"SELECT RoleID FROM Users WHERE Login = '{_login}' and Password = '{HashPassword(_password)}'"))
+            else if (roleID == int.Parse(KTKdb.SQLReadValue($"SELECT RoleID FROM Roles WHERE RoleName = 'Преподаватель'").ToString()))
             {
                 _navVM.NavigateTo("MainPageForTeachers", this);
             }
-            else if (KTKdb.SQLRead("SELECT RoleID FROM Roles WHERE RoleName = 'Администратор'") == KTKdb.SQLRead($"SELECT RoleID FROM Users WHERE Login = '{_login}' and Password = '{HashPassword(_password)}'"))
+            else if (roleID == int.Parse(KTKdb.SQLReadValue($"SELECT RoleID FROM Roles WHERE RoleName = 'Администратор'").ToString()))
             {
                 _navVM.NavigateTo("MainPageForAdmins", this);
             }
@@ -269,6 +298,41 @@ namespace DesktopKTKApp.ViewModel
         {
             _navVM.NavigateTo(param?.ToString(), this);
         }
+        public List<Week> GenerateWeeks(DateTime startDate)
+        {
+            List<Week> weeks = new List<Week>();
+
+            DateTime currentStartDate = startDate;
+
+            for (int i = 1; i <= 52; i++)
+            {
+                DateTime currentEndDate = currentStartDate.AddDays(5);
+                weeks.Add(new Week
+                {
+                    NumberOfWeeks = $"Неделя {i}",
+                    StartDate = currentStartDate.ToString("d"),
+                    EndDate = currentEndDate.ToString("d")
+                });
+                currentStartDate = currentStartDate.AddDays(7);
+            }
+            return weeks;
+        }
+        public DateTime GetFirstMondayInSeptember(int year)
+        {
+            DateTime firstSeptember = new DateTime(year, 9, 1);
+
+            DayOfWeek firstDayOfWeek = firstSeptember.DayOfWeek;
+
+            if (firstDayOfWeek == DayOfWeek.Monday)
+            {
+                return firstSeptember;
+            }
+
+            int daysToAdd = (DayOfWeek.Monday - firstDayOfWeek + 7) % 7;
+
+            return firstSeptember.AddDays(daysToAdd);
+        }
+
     }
 
     public class NavigationVM

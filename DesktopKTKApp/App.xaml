@@ -11,6 +11,7 @@
 
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesign3.Defaults.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <local:BoolToEyeConverter x:Key="BoolToEyeConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>

@@ -9,14 +9,12 @@ namespace DesktopKTKApp.Model
 {
     public static class KTKdb
     {
-        private static readonly SqlConnection db = new SqlConnection("Server=localhost;Database=master;Trusted_Connection=True"); //для подключения дома
-        //private static SqlConnection db = new SqlConnection("Server=10.14.206.27;Database=user5;User Id=user5;Password=Lu%5%4e4"); //для подключения в ктк
+        //private static readonly SqlConnection db = new SqlConnection("Server=localhost;Database=KTKdb;Trusted_Connection=True"); //для подключения дома
+        private static SqlConnection db = new SqlConnection("Server=10.14.206.27;Database=user5;User Id=user5;Password=Lu%5%4e4"); //для подключения в ктк
 
         public async static void SQLExecuteAsync(string sql)
         {
             db.Open();
-            var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-            cmd.ExecuteNonQuery();
             SqlCommand sqlCommand = new SqlCommand()
             {
                 Connection = db,
@@ -28,8 +26,6 @@ namespace DesktopKTKApp.Model
         public static void SQLExecute(string sql)
         {
             db.Open();
-            var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-            cmd.ExecuteNonQuery();
             SqlCommand sqlCommand = new SqlCommand()
             {
                 Connection = db,
@@ -41,8 +37,6 @@ namespace DesktopKTKApp.Model
         public static bool SQLRead(string sql)
         {
             db.Open();
-            var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-            cmd.ExecuteNonQuery();
             SqlCommand sqlCommand = new SqlCommand()
             {
                 Connection = db,
@@ -56,26 +50,23 @@ namespace DesktopKTKApp.Model
         }
         public static async Task<bool> SQLReadAsync(string sql)
         {
-            await db.OpenAsync(); // Асинхронное открытие соединения
+            await db.OpenAsync();
             try
             {
-                var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-                await cmd.ExecuteNonQueryAsync(); // Асинхронное выполнение команды
-
                 var sqlCommand = new SqlCommand()
                 {
                     Connection = db,
                     CommandText = sql
                 };
 
-                using (var reader = await sqlCommand.ExecuteReaderAsync()) // Асинхронный вызов ExecuteReader
+                using (var reader = await sqlCommand.ExecuteReaderAsync())
                 {
-                    return await reader.ReadAsync(); // Проверяем, есть ли данные
+                    return await reader.ReadAsync();
                 }
             }
             finally
             {
-                db.Close(); // Закрываем соединение в любом случае
+                db.Close();
             }
         }
         public static object SQLReadValue(string sql)
@@ -83,8 +74,6 @@ namespace DesktopKTKApp.Model
             try
             {
                 db.Open();
-                var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-                cmd.ExecuteNonQuery();
 
                 var sqlCommand = new SqlCommand()
                 {
@@ -94,7 +83,6 @@ namespace DesktopKTKApp.Model
 
                 var reader = sqlCommand.ExecuteReader();
 
-                // Проверка наличия строк
                 if (reader.Read())
                 {
                     object obj = reader.GetValue(0);
@@ -118,24 +106,20 @@ namespace DesktopKTKApp.Model
         }
         public static async Task<object> SQLReadValueAsync(string sql)
         {
-            await db.OpenAsync(); // Асинхронное открытие соединения
+            await db.OpenAsync();
             try
             {
-                var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-                await cmd.ExecuteNonQueryAsync(); // Асинхронное выполнение команды
-
                 var sqlCommand = new SqlCommand()
                 {
                     Connection = db,
                     CommandText = sql
                 };
 
-                using (var reader = await sqlCommand.ExecuteReaderAsync()) // Асинхронный вызов ExecuteReader
+                using (var reader = await sqlCommand.ExecuteReaderAsync())
                 {
-                    // Проверяем наличие строк
-                    if (await reader.ReadAsync()) // Асинхронное чтение строки
+                    if (await reader.ReadAsync())
                     {
-                        return reader.GetValue(0); // Возвращаем первое значение
+                        return reader.GetValue(0);
                     }
                     else
                     {
@@ -145,14 +129,12 @@ namespace DesktopKTKApp.Model
             }
             finally
             {
-                db.Close(); // Закрываем соединение в любом случае
+                db.Close();
             }
         }
         public static DataTable SQLGetData(string sql)
         {
             db.Open();
-            var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-            cmd.ExecuteNonQuery();
             SqlCommand sqlCommand = new SqlCommand()
             {
                 Connection = db,
@@ -169,8 +151,6 @@ namespace DesktopKTKApp.Model
         public static List<string> SQLGetListOfData (string sql)
         {
             db.Open();
-            var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-            cmd.ExecuteNonQuery();
             var list = new List<string>();
             var sqlCommand = new SqlCommand() 
             { 
@@ -188,8 +168,6 @@ namespace DesktopKTKApp.Model
         public static void SQLInsertData(string tableName, Dictionary<string, object> values)
         {
             db.Open();
-            var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-            cmd.ExecuteNonQuery();
 
             string columns = string.Join(", ", values.Keys);
             string parameters = string.Join(", ", values.Keys.Select(k => $"@{k}"));
@@ -206,12 +184,9 @@ namespace DesktopKTKApp.Model
         }  // Использование: KTKdb.InsertData("Users", new Dictionary<string, object> { {"...", "..."}, {"...", "..."} });
         public static async Task SQLInsertDataAsync(string tableName, Dictionary<string, object> values)
         {
-            await db.OpenAsync(); // Асинхронное открытие соединения
+            await db.OpenAsync();
             try
             {
-                var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-                await cmd.ExecuteNonQueryAsync(); // Асинхронное выполнение команды
-
                 string columns = string.Join(", ", values.Keys);
                 string parameters = string.Join(", ", values.Keys.Select(k => $"@{k}"));
                 string sql = $"INSERT INTO {tableName} ({columns}) VALUES ({parameters})";
@@ -222,18 +197,16 @@ namespace DesktopKTKApp.Model
                     sqlCommand.Parameters.AddWithValue($"@{pair.Key}", pair.Value);
                 }
 
-                await sqlCommand.ExecuteNonQueryAsync(); // Асинхронное выполнение команды вставки
+                await sqlCommand.ExecuteNonQueryAsync();
             }
             finally
             {
-                db.Close(); // Закрытие соединения в любом случае
+                db.Close();
             }
         }
         public static void SQLUpdateData(string tableName, Dictionary<string, object> values, string condition)
         {
             db.Open();
-            var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-            cmd.ExecuteNonQuery();
 
             string setClause = string.Join(", ", values.Keys.Select(k => $"{k} = @{k}"));
             string sql = $"UPDATE {tableName} SET {setClause} WHERE {condition}";
@@ -250,8 +223,6 @@ namespace DesktopKTKApp.Model
         public static bool SQLRecordExists(string tableName, string condition)
         {
             db.Open();
-            var cmd = new SqlCommand() { Connection = db, CommandText = "USE KTKdb" };
-            cmd.ExecuteNonQuery();
 
             string sql = $"SELECT 1 FROM {tableName} WHERE {condition}";
             SqlCommand sqlCommand = new SqlCommand(sql, db);
